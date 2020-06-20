@@ -2,14 +2,15 @@ import os
 import re
 from typing import Dict, Optional, Union
 
-from flask import Flask, _app_ctx_stack
+from flask import Flask
+from .base import StorageManager
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.sql.schema import MetaData
 
 
-class SQLAlchemyManager:
+class SQLAlchemyManager(StorageManager):
     def __init__(self, app: Flask):
         self.app = app
         if not app.config.get('SQLALCHEMY_BINDS'):
@@ -93,13 +94,9 @@ class SQLAlchemyManager:
         return {key: metadata.bind for key, metadata in self.metadata().items()}
 
     def metadata(self) -> Dict[str, MetaData]:
-        app_context_key = f'{type(self).__qualname__}_metadata'
-
-        ctx = _app_ctx_stack.top
-        if ctx is not None:
-            if not hasattr(ctx, app_context_key):
-                setattr(ctx, app_context_key, {})
-            return getattr(ctx, app_context_key)
+        if not hasattr(self, '__metadata'):
+            setattr(self, '__metadata', {})
+        return getattr(self, '__metadata')
 
     def _init_from_env_vars(self) -> None:
         regex = re.compile(r'SQLALCHEMY_(\d*)_(\w*)')

@@ -46,28 +46,25 @@ class TestSQLAlchemyManager:
     @patch.object(SQLAlchemyManager, '_create_engine')
     def test_init_bind_creates_db_engine_and_metadata(self, mocked_create_engine, app: Flask):
         manager = SQLAlchemyManager(app)
-        with app.test_request_context():
-            manager.init_bind(bind_name='test_bind', **self.init_params)
-            mocked_create_engine.assert_called_once_with(**self.init_params)
-            assert isinstance(manager.metadata()['test_bind'], MetaData)
+        manager.init_bind(bind_name='test_bind', **self.init_params)
+        mocked_create_engine.assert_called_once_with(**self.init_params)
+        assert isinstance(manager.metadata()['test_bind'], MetaData)
 
     def test_init_bind_fails_when_bind_is_already_initialised(self, app: Flask):
         manager = SQLAlchemyManager(app)
-        with app.test_request_context():
+        manager.init_bind(bind_name='test_bind', **self.init_params)
+        with raises(Exception):
             manager.init_bind(bind_name='test_bind', **self.init_params)
-            with raises(Exception):
-                manager.init_bind(bind_name='test_bind', **self.init_params)
 
     @patch.object(SQLAlchemyManager, '_create_engine')
     def test_init_bind_initialise_correctly_multiple_binds(self, mocked_create_engine, app: Flask):
         manager = SQLAlchemyManager(app)
-        with app.test_request_context():
-            manager.init_bind(bind_name='test_bind', **self.init_params)
-            manager.init_bind(bind_name='additional_bind', **self.init_params)
-            mocked_create_engine.assert_called_with(**self.init_params)
-            assert mocked_create_engine.call_count == 2
-            assert isinstance(manager.metadata()['test_bind'], MetaData)
-            assert isinstance(manager.metadata()['additional_bind'], MetaData)
+        manager.init_bind(bind_name='test_bind', **self.init_params)
+        manager.init_bind(bind_name='additional_bind', **self.init_params)
+        mocked_create_engine.assert_called_with(**self.init_params)
+        assert mocked_create_engine.call_count == 2
+        assert isinstance(manager.metadata()['test_bind'], MetaData)
+        assert isinstance(manager.metadata()['additional_bind'], MetaData)
 
     @patch('flask_ddd_repository.db_manager.sqlalchemy.create_engine')
     def test_create_engine_forwards_correctly_sqlite_parameters(self, mocked_sqlalchemy_create_engine, app):
@@ -102,21 +99,18 @@ class TestSQLAlchemyManager:
 
     def test_create_session_return_unbound_session_by_default(self, app: Flask):
         manager = SQLAlchemyManager(app)
-        with app.test_request_context():
-            manager.init_bind(bind_name='test_bind', **self.init_params)
-            session = manager.create_session()
-            assert session.bind is None
+        manager.init_bind(bind_name='test_bind', **self.init_params)
+        session = manager.create_session()
+        assert session.bind is None
 
     def test_create_session_return_bound_session_if_bind_initialised(self, app: Flask):
         manager = SQLAlchemyManager(app)
-        with app.test_request_context():
-            manager.init_bind(bind_name='test_bind', **self.init_params)
-            session = manager.create_session('test_bind')
-            assert isinstance(session.bind, Engine)
+        manager.init_bind(bind_name='test_bind', **self.init_params)
+        session = manager.create_session('test_bind')
+        assert isinstance(session.bind, Engine)
 
     def test_create_session_raises_exception_if_bind_not_initialised(self, app: Flask):
         manager = SQLAlchemyManager(app)
-        with app.test_request_context():
-            manager.init_bind(bind_name='test_bind', **self.init_params)
-            with raises(Exception):
-                manager.create_session("not_initialised_bind_name")
+        manager.init_bind(bind_name='test_bind', **self.init_params)
+        with raises(Exception):
+            manager.create_session("not_initialised_bind_name")
