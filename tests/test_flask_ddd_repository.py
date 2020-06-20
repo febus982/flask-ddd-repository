@@ -1,7 +1,7 @@
 from unittest.mock import patch, PropertyMock
 
 from flask import Flask
-from flask_ddd_repository import FlaskDDDRepository, DB_MANAGER_SQLALCHEMY, _FlaskDDDRepositoryState, _get_managers
+from flask_ddd_repository import FlaskDDDRepository, DB_MANAGER_SQLALCHEMY, _FlaskDDDRepositoryState, get_managers
 from flask_ddd_repository.db_manager.sqlalchemy import SQLAlchemyManager
 
 
@@ -22,7 +22,7 @@ class TestFlaskDDDRepository:
         repo = FlaskDDDRepository()
         repo.init_app(app, (DB_MANAGER_SQLALCHEMY,))
         mocked_manager_init.assert_called_once()
-        assert isinstance(_get_managers(app).get(DB_MANAGER_SQLALCHEMY), SQLAlchemyManager)
+        assert isinstance(get_managers(app).get(DB_MANAGER_SQLALCHEMY), SQLAlchemyManager)
 
     @patch.object(FlaskDDDRepository, '_FlaskDDDRepository__db_managers_registry', new_callable=PropertyMock)
     @patch.object(SQLAlchemyManager, '__init__', return_value=None)
@@ -31,7 +31,7 @@ class TestFlaskDDDRepository:
         repo = FlaskDDDRepository()
         repo.init_app(app, (DB_MANAGER_SQLALCHEMY,))
         mocked_manager_init.assert_not_called()
-        assert not _get_managers(app).get(DB_MANAGER_SQLALCHEMY)
+        assert not get_managers(app).get(DB_MANAGER_SQLALCHEMY)
 
     def test_init_app_add_context_teardown_function_to_app(self, app: Flask):
         repo = FlaskDDDRepository()

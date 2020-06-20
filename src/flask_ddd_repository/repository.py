@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from typing import List, Union
 
+from flask import current_app
+from flask_ddd_repository import get_managers, DB_MANAGER_SQLALCHEMY
+from flask_ddd_repository.db_manager.sqlalchemy import SQLAlchemyManager
+from flask_ddd_repository.exceptions import ModelNotFoundException
+from flask_ddd_repository.model import Model
 from sqlalchemy.engine.base import Engine, Connection
 from sqlalchemy.orm import Session, Query
-
-from .model import Model
-from .db_manager.sqlalchemy import SQLAlchemyManager
 
 
 class AbstractRepository(ABC):
@@ -59,7 +61,7 @@ class AbstractRepository(ABC):
         pass
 
 
-class SqlalchemyRepository(AbstractRepository):
+class SQLAlchemyRepository(AbstractRepository):
     """
     Generic repository which uses SQLAlchemy ORM persistence layer
     """
@@ -67,7 +69,7 @@ class SqlalchemyRepository(AbstractRepository):
     @contextmanager
     def _managed_session(self, parent_session: Session = None):
         if not parent_session:
-            session = SQLAlchemyManager.create_session()
+            session = self._get_manager().create_session()
             assert isinstance(session.get_bind(self._model_class), (Engine, Connection))
             try:
                 yield session
@@ -81,6 +83,9 @@ class SqlalchemyRepository(AbstractRepository):
             assert isinstance(parent_session.get_bind(self._model_class), (Engine, Connection))
             # Should we flush here?
             yield parent_session
+
+    def _get_manager(self) -> SQLAlchemyManager:
+        return get_managers(current_app._get_current_object())[DB_MANAGER_SQLALCHEMY]
 
     def _query(self, session: Session) -> Query:
         return session.query(self._model_class)

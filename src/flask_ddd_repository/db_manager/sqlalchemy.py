@@ -3,7 +3,7 @@ import re
 from typing import Dict, Optional, Union
 
 from flask import Flask
-from .base import StorageManager
+from flask_ddd_repository.db_manager.base import StorageManager
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm import sessionmaker, Session

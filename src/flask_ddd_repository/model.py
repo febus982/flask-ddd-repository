@@ -2,7 +2,7 @@ from abc import ABC
 from datetime import datetime
 from typing import Optional, Type
 
-from .factory import Factory
+from flask_ddd_repository.factory import Factory
 
 
 class Model(ABC):

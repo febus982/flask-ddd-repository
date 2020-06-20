@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import Dict, Tuple, Union, Optional
+from typing import Dict, Tuple
 
 from flask import Flask, current_app
-
-from .db_manager.base import StorageManager
-from .db_manager.sqlalchemy import SQLAlchemyManager
-from .model import Model
+from flask_ddd_repository.db_manager.base import StorageManager
+from flask_ddd_repository.db_manager.sqlalchemy import SQLAlchemyManager
+from flask_ddd_repository.model import Model
 
 __version__ = "1.0.0.dev"
 
@@ -55,12 +54,8 @@ def _get_state(app: Flask) -> _FlaskDDDRepositoryState:
     return app.extensions['ddd_repository']
 
 
-def _get_managers(app: Flask, manager: Optional[str] = None) -> Union[StorageManager, Dict[str, StorageManager]]:
+def get_managers(app: Flask):
     managers = _get_state(app).managers
-    if manager:
-        assert manager in managers.keys()
-        return managers.get(manager)
-
     return managers
 
 

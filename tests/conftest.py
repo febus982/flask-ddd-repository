@@ -2,7 +2,9 @@ from datetime import datetime
 
 import flask
 import pytest
-from flask_ddd_repository import FlaskDDDRepository
+from flask_ddd_repository import FlaskDDDRepository, get_managers, DB_MANAGER_SQLALCHEMY
+from sqlalchemy import Table, Column, Integer, String
+from sqlalchemy.orm import mapper
 
 
 @pytest.fixture
@@ -28,26 +30,31 @@ def app(sqlalchemy_binds, request):
 
 
 @pytest.fixture
-def repo(app):
+def repo(app, sqlalchemy_binds):
     app.config["SQLALCHEMY_BINDS"] = sqlalchemy_binds
     return FlaskDDDRepository(app)
 
-# @pytest.fixture
-# def Todo(db):
-#     class Todo(db.Model):
-#         __tablename__ = "todos"
-#         id = db.Column("todo_id", db.Integer, primary_key=True)
-#         title = db.Column(db.String(60))
-#         text = db.Column(db.String)
-#         done = db.Column(db.Boolean)
-#         pub_date = db.Column(db.DateTime)
-#
-#         def __init__(self, title, text):
-#             self.title = title
-#             self.text = text
-#             self.done = False
-#             self.pub_date = datetime.utcnow()
-#
-#     db.create_all()
-#     yield Todo
-#     db.drop_all()
+
+@pytest.fixture
+def Model(app, repo):
+    class Model(repo.Model):
+        def __init__(self, name, lastname):
+            self.name = name
+            self.lastname = lastname
+
+    table_name = 'model'
+    bind_name = 'test_sqlite_memory'
+    manager = get_managers(repo.get_app())[DB_MANAGER_SQLALCHEMY]
+    meta = manager.metadata()[bind_name]
+    manager = get_managers(app)[DB_MANAGER_SQLALCHEMY]
+    meta = manager.metadata()[bind_name]
+    test_table = Table(
+        table_name, meta,
+        Column('id', Integer, primary_key=True),
+        Column('name', String),
+        Column('lastname', String),
+    )
+    mapper(Model, test_table)
+    meta.create_all()
+    yield Model
+    meta.drop_all()
