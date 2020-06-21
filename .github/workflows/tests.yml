@@ -8,17 +8,17 @@ on:
 
 jobs:
   test:
-    name: Test on python ${{ matrix.node_version }} on os ${{ matrix.os }}
+    name: Test on python ${{ matrix.python-version }} on os ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-#          - {name: Linux, python: '3.8', os: ubuntu-latest, tox: py38}
-#          - {name: Windows, python: '3.8', os: windows-latest, tox: py38}
-#          - {name: Mac, python: '3.8', os: macos-latest, tox: py38}
-          - {name: '3.7', python: '3.7', os: ubuntu-latest, tox: py37}
-#          - {name: '3.6', python: '3.6', os: ubuntu-latest, tox: py36}
-#          - {name: 'PyPy', python: pypy3, os: ubuntu-latest, tox: pypy3}
+#          - {name: Linux, python-version: '3.8', os: ubuntu-latest, tox: py38}
+#          - {name: Windows, python-version: '3.8', os: windows-latest, tox: py38}
+#          - {name: Mac, python-version: '3.8', os: macos-latest, tox: py38}
+          - {name: '3.7', python-version: '3.7', os: ubuntu-latest, tox: py37}
+#          - {name: '3.6', python-version: '3.6', os: ubuntu-latest, tox: py36}
+#          - {name: 'PyPy', python-version: pypy3, os: ubuntu-latest, tox: pypy3}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
