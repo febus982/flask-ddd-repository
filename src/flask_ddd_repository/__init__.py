@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Dict, Tuple
 
 from flask import Flask, current_app
@@ -11,6 +9,14 @@ from .model import Model
 __version__ = "1.0.0.dev"
 
 DB_MANAGER_SQLALCHEMY = 'sqlalchemy'
+
+
+class _FlaskDDDRepositoryState:
+    """Configuration state for the flask_ddd_repository extension."""
+
+    def __init__(self, repo):
+        self.repo = repo
+        self.managers: Dict[str, StorageManager] = {}
 
 
 class FlaskDDDRepository:
@@ -58,11 +64,3 @@ def _get_state(app: Flask) -> _FlaskDDDRepositoryState:
 def get_managers(app: Flask):
     managers = _get_state(app).managers
     return managers
-
-
-class _FlaskDDDRepositoryState:
-    """Configuration state for the flask_ddd_repository extension."""
-
-    def __init__(self, repo: FlaskDDDRepository):
-        self.repo = repo
-        self.managers: Dict[str, StorageManager] = {}
