@@ -11,6 +11,7 @@ jobs:
     name: Test on python ${{ matrix.python-version }} on os ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - {name: Linux, python-version: '3.8', os: ubuntu-latest, tox: py38}
