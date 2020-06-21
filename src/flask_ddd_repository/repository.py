@@ -3,12 +3,13 @@ from contextlib import contextmanager
 from typing import List, Union
 
 from flask import current_app
-from flask_ddd_repository import get_managers, DB_MANAGER_SQLALCHEMY
-from flask_ddd_repository.db_manager.sqlalchemy import SQLAlchemyManager
-from flask_ddd_repository.exceptions import ModelNotFoundException
-from flask_ddd_repository.model import Model
 from sqlalchemy.engine.base import Engine, Connection
 from sqlalchemy.orm import Session, Query
+
+from . import get_managers, DB_MANAGER_SQLALCHEMY
+from .db_manager.sqlalchemy import SQLAlchemyManager
+from .exceptions import ModelNotFoundException
+from .model import Model
 
 
 class AbstractRepository(ABC):

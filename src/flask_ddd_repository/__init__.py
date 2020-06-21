@@ -3,9 +3,10 @@ from __future__ import annotations
 from typing import Dict, Tuple
 
 from flask import Flask, current_app
-from flask_ddd_repository.db_manager.base import StorageManager
-from flask_ddd_repository.db_manager.sqlalchemy import SQLAlchemyManager
-from flask_ddd_repository.model import Model
+
+from .db_manager.base import StorageManager
+from .db_manager.sqlalchemy import SQLAlchemyManager
+from .model import Model
 
 __version__ = "1.0.0.dev"
 

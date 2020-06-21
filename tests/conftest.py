@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import flask
 import pytest
 from flask_ddd_repository import FlaskDDDRepository, get_managers, DB_MANAGER_SQLALCHEMY
