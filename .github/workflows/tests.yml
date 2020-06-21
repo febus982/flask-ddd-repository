@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Test on python ${{ matrix.python-version }} on os ${{ matrix.os }}
+    name: ${{ matrix.python-version }}-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
